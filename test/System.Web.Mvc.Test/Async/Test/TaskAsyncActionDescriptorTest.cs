@@ -284,6 +284,66 @@ namespace System.Web.Mvc.Async.Test
         }
 
         [Fact]
+        public void ExecuteTaskWithExternalTimeout()
+        {
+            // Arrange
+            TaskAsyncActionDescriptor actionDescriptor = GetActionDescriptor(GetExecuteControllerMethodInfo("TaskTimeout"));
+            ControllerContext controllerContext = GetControllerContext(Timeout.Infinite);
+            CancellationTokenSource externalTokenSource = new CancellationTokenSource(1000);
+
+            Dictionary<string, object> token = new Dictionary<string, object>()
+            {
+                { "cancellationToken", externalTokenSource.Token }
+            };
+
+            // Act & assert
+            Assert.Throws<TaskCanceledException>(
+                () => actionDescriptor.EndExecute(actionDescriptor.BeginExecute(controllerContext, parameters: token, callback: null, state: null)),
+                "A task was canceled."
+                );
+        }
+
+        [Fact]
+        public void ExecuteTaskWithCombinedTimeout_ExternalLower()
+        {
+            // Arrange
+            TaskAsyncActionDescriptor actionDescriptor = GetActionDescriptor(GetExecuteControllerMethodInfo("TaskTimeout"));
+            ControllerContext controllerContext = GetControllerContext(2000);
+            CancellationTokenSource externalTokenSource = new CancellationTokenSource(1000);
+
+            Dictionary<string, object> token = new Dictionary<string, object>()
+            {
+                { "cancellationToken", externalTokenSource.Token }
+            };
+
+            // Act & assert
+            Assert.Throws<TaskCanceledException>(
+                () => actionDescriptor.EndExecute(actionDescriptor.BeginExecute(controllerContext, parameters: token, callback: null, state: null)),
+                "A task was canceled."
+                );
+        }
+
+        [Fact]
+        public void ExecuteTaskWithCombinedTimeout_ExternalHigher()
+        {
+            // Arrange
+            TaskAsyncActionDescriptor actionDescriptor = GetActionDescriptor(GetExecuteControllerMethodInfo("TaskTimeout"));
+            ControllerContext controllerContext = GetControllerContext(1000);
+            CancellationTokenSource externalTokenSource = new CancellationTokenSource(2000);
+
+            Dictionary<string, object> token = new Dictionary<string, object>()
+            {
+                { "cancellationToken", externalTokenSource.Token }
+            };
+
+            // Act & assert
+            Assert.Throws<TimeoutException>(
+                () => actionDescriptor.EndExecute(actionDescriptor.BeginExecute(GetControllerContext(2000), parameters: token, callback: null, state: null)),
+                "The operation has timed out."
+                );
+        }
+
+        [Fact]
         public void SynchronousExecuteThrows()
         {
             // Arrange

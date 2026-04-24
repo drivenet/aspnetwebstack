@@ -9,7 +9,8 @@ namespace System.Web.Mvc
     {
         public object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
-            return default(CancellationToken);
+            var httpResponse = controllerContext.HttpContext.Response;
+            return httpResponse.ClientDisconnectedToken;
         }
     }
 }

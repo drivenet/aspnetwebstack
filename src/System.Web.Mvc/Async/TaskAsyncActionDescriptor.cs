@@ -114,14 +114,14 @@ namespace System.Web.Mvc.Async
             bool disposedTimer = false;
             Timer taskCancelledTimer = null;
             bool taskCancelledTimerRequired = false;
-
+            bool timeoutReached = false;
             int timeout = GetAsyncManager(controllerContext.Controller).Timeout;
 
             for (int i = 0; i < parametersArray.Length; i++)
             {
-                if (default(CancellationToken).Equals(parametersArray[i]))
+                if (parametersArray[i] is CancellationToken cancellationToken)
                 {
-                    tokenSource = new CancellationTokenSource();
+                    tokenSource = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
                     parametersArray[i] = tokenSource.Token;
 
                     // If there is a timeout we will create a timer to cancel the task when the
@@ -141,6 +141,7 @@ namespace System.Web.Mvc.Async
                     {
                         if (!disposedTimer)
                         {
+                            timeoutReached = true;
                             tokenSource.Cancel();
                         }
                     }
@@ -164,10 +165,10 @@ namespace System.Web.Mvc.Async
                     {
                         disposedTimer = true;
                         tokenSource.Dispose();
-                        if (tokenSource.IsCancellationRequested)
+                        if (tokenSource.IsCancellationRequested && timeoutReached)
                         {
                             // Give Timeout exceptions higher priority over other exceptions, mainly OperationCancelled exceptions
-                            // that were signaled with out timeout token.
+                            // that were signaled with out timeout token, but only if the timeout has been reached.
                             throw new TimeoutException();
                         }
                     }
