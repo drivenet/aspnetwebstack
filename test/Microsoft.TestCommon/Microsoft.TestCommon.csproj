@@ -24,6 +24,7 @@
         Condition=" '$(TargetFrameworkIdentifier)' == '.NETFramework' " />
 
     <PackageReference Include="Moq" Version="4.18.4" />
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3" />
     <PackageReference Include="xunit.abstractions" Version="2.0.3" />
     <PackageReference Include="xunit.assert" Version="2.4.2" />
     <PackageReference Include="xunit.extensibility.core" Version="2.4.2" />
