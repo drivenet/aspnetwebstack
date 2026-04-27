@@ -111,7 +111,6 @@
       <Link>Routing\SubRouteCollectionTest.cs</Link>
     </Compile>
     <Compile Include="Test\AjaxHelperOfTModelTest.cs" />
-    <Compile Include="Test\CancellationTokenModelBinderTest.cs" />
     <Compile Include="Test\CachedAssociatedMetadataProviderTest.cs" />
     <Compile Include="Test\CachedDataAnnotationsModelMetadataProviderTest.cs" />
     <Compile Include="Test\ChildActionValueProviderFactoryTest.cs" />
